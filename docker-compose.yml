@@ -5,9 +5,9 @@ services:
     image: postgres:12
     restart: always
     environment:
-      - POSTGRES_USER=peamytest
-      - POSTGRES_PASSWORD=armoff122
-      - POSTGRES_DB=peamytest
+      - POSTGRES_USER= armboy122
+      - POSTGRES_PASSWORD= armboy122
+      - POSTGRES_DB= armboy122
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     ports:
