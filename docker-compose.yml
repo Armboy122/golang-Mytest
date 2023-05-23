@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  postgresql:
+    image: postgres:12
+    restart: always
+    environment:
+      - POSTGRES_USER=peamytest
+      - POSTGRES_PASSWORD=armoff122
+      - POSTGRES_DB=peamytest
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
