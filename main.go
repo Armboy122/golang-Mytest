@@ -1,50 +1,31 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-
+	AuthController "github.com/Armboy122/golang-Mytest/controller"
+	"github.com/Armboy122/golang-Mytest/orm"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-type Course struct {
-	ID          string `json:"id"` // json: แปลงชื่อให้อยู่ในรูปแบบที่ต้องการจากตัวใหญ่ก็เป็นตัวเล็กจากคำยาวเป็นสั้น
-	Name        string `json:"name"`
-	Description string `json:"desc"`
+type Register struct {
+	Username string `json:"username"  binding:"required"`
+	Password string `json:"password" binding:"required"`
+	Fullname string `json:"fullname" binding:"required"`
 }
 
-// สร้างข้อมูลมาลองDB
-var courses = []Course{ //Couse บอกว่า ตัวแปลนี้มีชนิดข้อมูลทั้สรา้งตาม type ที่กล่าวถึง
-	{ID: "1", Name: "TDD", Description: "let Go"},
-	{ID: "2", Name: "Arm", Description: "let armboy Go"},
+type User struct {
+	gorm.Model
+	Username string
+	Password string
+	Fullname string
 }
 
 func main() {
-	fmt.Println("hello")
+	orm.InitDB()
 	r := gin.Default()
-
-	//สร้าง path ที่ใช้งาน
-	r.GET("/courses", listCourses)
-	r.GET("/courses/:id", getCourses)
-
-	r.Run(":8000")
-}
-
-// func เรียกดูข้อมูลที่มี
-func listCourses(c *gin.Context) {
-	c.IndentedJSON(http.StatusOK, courses)
-}
-
-func getCourses(c *gin.Context) {
-	id := c.Param("id")
-	for _, course := range courses {
-		if course.ID == id {
-			c.IndentedJSON(http.StatusOK, course)
-			return
-		}
-	}
-
-	c.IndentedJSON(http.StatusNotFound, gin.H{
-		"message": "course not found",
-	})
+	r.Use(cors.Default())
+	r.POST("/register", AuthController.Register)
+	r.POST("/login", AuthController.Login)
+	r.Run("localhost:8080") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
