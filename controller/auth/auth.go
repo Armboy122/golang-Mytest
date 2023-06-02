@@ -23,7 +23,7 @@ type LoginBody struct {
 	Password string `json:"password" binding:"required"`
 }
 
-var hmacSampleSecret []byte
+var hms []byte
 
 func Register(c *gin.Context) {
 	var json RegisterBody // json เก็บข้อมูลของสิ่งที่ส่งเข้าไป
@@ -49,7 +49,7 @@ func Register(c *gin.Context) {
 	if user.ID > 0 {
 		c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "User Create Success", "userId": user.ID})
 	} else {
-		c.JSON(http.StatusOK, gin.H{"status": "error", "message": "User Create Failed"})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "error", "message": "User Create Failed"})
 	}
 }
 
@@ -70,20 +70,21 @@ func Login(c *gin.Context) {
 	//------------------เช็คPassword ของ User ว่าถูกต้องรึป่าว-----------------------
 	err := bcrypt.CompareHashAndPassword([]byte(userExist.Password), []byte(json.Password))
 	if err == nil {
-		hmacSampleSecret = []byte(os.Getenv("JWT_SECRET_KEY"))
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		hms = []byte(os.Getenv("JWT_SECRET_KEY"))
+		token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{ //สร้างโทเค็นโดยกำหนดได้ว่าในโทเค็นจะมีอะไรบ้าง
 			"userId": userExist.ID,
-			"exp":    time.Now().Add(time.Minute * 1).Unix(),
+			"role":   userExist.Role,
+			"exp":    time.Now().Add(time.Minute * 3).Unix(), //หมดอายุภายในสาม นาที
 		})
 
-		tokenString, err := token.SignedString(hmacSampleSecret)
+		tokenString, err := token.SignedString(hms)
 		fmt.Println(tokenString, err)
 
 		c.JSON(http.StatusOK, gin.H{
-			"status":       "ok",
-			"message":      "login success",
-			"token":        tokenString,
-			"statusclaims": token.Claims.(jwt.MapClaims),
+			"status":  "ok",
+			"message": "login success",
+			"token":   tokenString,
+			// "statusclaims": token.Claims.(jwt.MapClaims),
 		})
 	} else {
 		c.JSON(http.StatusOK, gin.H{

@@ -8,7 +8,8 @@ import (
 
 	"github.com/Armboy122/golang-Mytest/controller/auth" //เรียกใช้func
 	"github.com/Armboy122/golang-Mytest/controller/user" //เรียกใช้func
-	"github.com/Armboy122/golang-Mytest/orm"             //เรียกใช้  func init จากไฟล์ orm
+	"github.com/Armboy122/golang-Mytest/middleware"
+	"github.com/Armboy122/golang-Mytest/orm" //เรียกใช้  func init จากไฟล์ orm
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
@@ -29,7 +30,9 @@ func main() {
 	})
 	r.POST("/register", auth.Register)
 	r.POST("/login", auth.Login)
-	r.GET("/user/readall", user.ReadAll)
+	authorized := r.Group("/user", middleware.Logger())
+	authorized.GET("/readall", user.ReadAll) // สำหรับแอดมินไว้ดูงานทุกคน
+	authorized.GET("/profile", user.Profile) // ให้ User ดูงานและแก้ไขห้ามลบ
 
 	r.Run("localhost:8000") // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

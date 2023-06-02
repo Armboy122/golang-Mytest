@@ -12,17 +12,18 @@ type User struct {
 	Username string
 	Password string
 	Fullname string
+	Role     string
 }
 
 var Db *gorm.DB
-var err error
 
 func InitDB() {
-	dsn := os.Getenv("MYSQL_DNS")
+	var err error
+	dsn := os.Getenv("DB")
 	Db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-		panic("filed to connect database")
+		panic("failed to connect to db")
 	}
 	Db.AutoMigrate(&User{})
 }
