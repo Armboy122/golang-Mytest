@@ -15,6 +15,12 @@ type User struct {
 	Role     string
 }
 
+type Works struct {
+	ID     uint `gorm:"primaryKey"`
+	Date   string
+	Detail string
+}
+
 var Db *gorm.DB
 
 func InitDB() {
@@ -25,5 +31,5 @@ func InitDB() {
 	if err != nil {
 		panic("failed to connect to db")
 	}
-	Db.AutoMigrate(&User{})
+	Db.AutoMigrate(&User{}, &Works{})
 }

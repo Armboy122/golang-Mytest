@@ -7,6 +7,7 @@ import (
 
 	"github.com/Armboy122/golang-Mytest/controller/auth" //เรียกใช้func
 	"github.com/Armboy122/golang-Mytest/controller/user" //เรียกใช้func
+	"github.com/Armboy122/golang-Mytest/controller/works"
 	"github.com/Armboy122/golang-Mytest/middleware"
 	"github.com/Armboy122/golang-Mytest/orm" //เรียกใช้  func init จากไฟล์ orm
 	"github.com/gin-contrib/cors"
@@ -26,6 +27,7 @@ func main() {
 	r.Use(cors.Default())
 	r.POST("/register", auth.Register) // สมัครใช้งาน
 	r.POST("/login", auth.Login)       // login เข้าระบบ
+	r.POST("/creat", works.Creatework) // login เข้าระบบ
 	authorized := r.Group("/user", middleware.Logger())
 	authorized.GET("/readall", user.ReadAll) // สำหรับแอดมินไว้ดูงานทุกคน
 	authorized.GET("/profile", user.Profile) // ให้ User ดูงานและแก้ไขห้ามลบ
