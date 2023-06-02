@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/joho/godotenv"
 
@@ -15,21 +14,18 @@ import (
 )
 
 func main() {
+	//---------------------------เช็คไฟล์ .env-----------------------------
 	err := godotenv.Load(".env")
-
 	if err != nil {
 		fmt.Println("Error loading .env file")
 	}
+	//---------------------------ต่อ db-----------------------------
 	orm.InitDB()
+	//---------------------------path ต่างๆของDB-----------------------------
 	r := gin.Default()
 	r.Use(cors.Default())
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-	r.POST("/register", auth.Register)
-	r.POST("/login", auth.Login)
+	r.POST("/register", auth.Register) // สมัครใช้งาน
+	r.POST("/login", auth.Login)       // login เข้าระบบ
 	authorized := r.Group("/user", middleware.Logger())
 	authorized.GET("/readall", user.ReadAll) // สำหรับแอดมินไว้ดูงานทุกคน
 	authorized.GET("/profile", user.Profile) // ให้ User ดูงานและแก้ไขห้ามลบ
